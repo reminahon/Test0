@@ -36,3 +36,16 @@ data <- read.csv("US_presidential_elections_10_states.csv")
 # First visualization
 head(data)
 ```
+
+```{r}
+r <- c();
+cat(r)
+#
+#data %>%
+#  data$Vote <- (r)
+#  ggplot( aes(x=gdpPercap, y=lifeExp, color=continent, size = pop)) +
+#    geom_point() + 
+#  ggtitle("Countries with the population")
+
+```
+
