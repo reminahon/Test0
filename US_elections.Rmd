@@ -1,6 +1,6 @@
 ---
 title: "US Election : Comparison between states"
-author: "Rémi NAHON"
+author: "Réminou NAHON"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 mail: "remi.nahon@mines-ales.org"
 linkedin: "rémi-nahon-609901160"
