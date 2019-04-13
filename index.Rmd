@@ -4,7 +4,7 @@ author: "Rémi NAHON"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 mail: "remi.nahon@mines-ales.org"
 linkedin: "rémi-nahon-609901160"
-logo: "USA_logo.png"
+logo: "images/USA_logo.png"
 output:
   epuRate::epurate:
     toc: TRUE
@@ -12,7 +12,8 @@ output:
     code_folding: "hide"
 ---
 
-
+email avec un url de repository github
+readme avec le nom des 2/3 pers du groupe
 <br><br>
 
 ```{r setup, include=FALSE}
@@ -32,20 +33,32 @@ library(ggplot2)
 
 ```{r data_load}
 # Loading of the data
-data <- read.csv("US_presidential_elections_10_states.csv")
+data <- read.csv("data/US_presidential_elections_10_states.csv")
 # First visualization
-head(data)
+head(data, 10)
 ```
 
 ```{r}
-r <- c();
-cat(r)
-#
-#data %>%
-#  data$Vote <- (r)
-#  ggplot( aes(x=gdpPercap, y=lifeExp, color=continent, size = pop)) +
-#    geom_point() + 
-#  ggtitle("Countries with the population")
+vote <- rep("R",length(data$State))
+for (i in 1:length(data$State)) 
+  if(data$Average.of.Republicans.2016[i] < 50)
+    vote[i]="D"
+data$Vote <- vote
+cat(data$Vote)
+  
+  
+data %>%
+  ggplot( aes(x=Average.of.Poverty.Rate.below.federal.poverty.threshold,
+              y=Average.of.White..Not.Latino..Population, 
+              color=Vote,
+              size=Average.of.Violent.crime, 
+              text = State)) +
+    geom_point() + 
+  ggtitle("Countries with the population")
+```
 
+```{r}
+c<-1:5
+cat(c[1])
 ```
 
