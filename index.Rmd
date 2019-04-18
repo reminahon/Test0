@@ -38,9 +38,9 @@ library(kableExtra)
 data <- read.csv("data/gender_inequality.csv")
 # First visualization
 head(data, 20)
-
+#data$Gender.Inequality.Index..GII. <- as.numeric(levels(data$Gender.Inequality.Index..GII.))[data$Gender.Inequality.Index..GII.]
+data$Gender.Inequality.Index..GII. <- as.numeric(as.character(data$Gender.Inequality.Index..GII.))
 ```
-
 ```{r lollipop}
 data %>%
   filter(Gender.Inequality.Index..GII. != "..") %>%
@@ -50,15 +50,33 @@ data %>%
   ggplot( aes(x=Country, y=Gender.Inequality.Index..GII.) ) +
     geom_segment( aes(x = Country, 
                       xend = Country,
-                      y=Gender.Inequality.Index..GII.,
+                      y = 0,
                       yend = Gender.Inequality.Index..GII.),
                   color = "grey") +
     geom_point(size=3, color="#69b3a2") +
     coord_flip() +
     theme_ipsum() +
     theme(panel.grid.minor.y = element_blank(),
-          panel.grid.major.y = element_blank(),
-          axis.text.x = element_blank() ) +
+          panel.grid.major.y = element_blank()) +
+    xlab("") +
+    ylab("Gender Inequality Index")
+
+data %>%
+  filter(Gender.Inequality.Index..GII. != "..") %>%
+  arrange(desc(Gender.Inequality.Index..GII.)) %>%
+  mutate(Country=factor(Country, Country)) %>%
+  head(20)%>%
+  ggplot( aes(x=Country, y=Gender.Inequality.Index..GII.) ) +
+    geom_segment( aes(x = Country, 
+                      xend = Country,
+                      y = 0,
+                      yend = Gender.Inequality.Index..GII.),
+                  color = "grey") +
+    geom_point(size=3, color="#69b3a2") +
+    coord_flip() +
+    theme_ipsum() +
+    theme(panel.grid.minor.y = element_blank(),
+          panel.grid.major.y = element_blank()) +
     xlab("") +
     ylab("Gender Inequality Index")
 ```
