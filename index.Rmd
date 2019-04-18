@@ -82,6 +82,12 @@ data %>%
 ```
 
 ```{r anais multichart}
+# Basic ggplot
+p <- data %>%
+  mutate(myText=paste("This country is: " , Country )) %>%
+  ggplot( aes(x= Population.with.Secondary.Education..Female., y=Percent.Representation.in.Parliament, size = Adolescent.Birth.Rate, color = Country, text=myText)) +
+    geom_point(alpha=0.7) 
 
+ggplotly(p, tooltip="text")
 ```
 
