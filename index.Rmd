@@ -24,42 +24,50 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, tidy = TRUE,
 
 ```{r import_libraries, echo = FALSE}
 library(tidyverse)
-library(rmarkdown)    # You need this library to run this template.
-library(epuRate)      # Install with devtools: install_github("holtzy/epuRate", force=TRUE)
+library(rmarkdown)    
+library(epuRate)      
 library(dplyr)
 library(ggplot2)
+library(hrbrthemes)
+library(kableExtra)
 ```
 
 
 ```{r data_load}
 # Loading of the data
-data <- read.csv("data/US_presidential_elections_10_states.csv")
+data <- read.csv("data/gender_inequality.csv")
 # First visualization
 head(data, 10)
 ```
 
-```{r}
-vote <- rep("R",length(data$State))
-for (i in 1:length(data$State)) 
-  if(data$Average.of.Republicans.2016[i] < 50)
-    vote[i]="D"
-data$Vote <- vote
-cat(data$Vote)
-  
-  
+```{r lollipop}
+# Libraries
+
+
+# Load dataset from github
+data <- read.table("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/7_OneCatOneNum.csv", header=TRUE, sep=",")
+
+# Plot
 data %>%
-  ggplot( aes(x=Average.of.Poverty.Rate.below.federal.poverty.threshold,
-              y=Average.of.White..Not.Latino..Population, 
-              color=Vote,
-              size=Average.of.Violent.crime,)) +
-    geom_point() + 
-    geom_label(label=data$State,  nudge_x = 0.25, 
-               nudge_y=3, color="black", size = 2.5) +
-    ggtitle("Countries with the population")
+  filter(!is.na(Value)) %>%
+  arrange(Value) %>%
+  tail(20) %>%
+  mutate(Country=factor(Country, Country)) %>%
+  ggplot( aes(x=Country, y=Value) ) +
+    geom_segment( aes(x=Country ,xend=Country, y=0, yend=Value), color="grey") +
+    geom_point(size=3, color="#69b3a2") +
+    coord_flip() +
+    theme_ipsum() +
+    theme(
+      panel.grid.minor.y = element_blank(),
+      panel.grid.major.y = element_blank(),
+      legend.position="none"
+    ) +
+    xlab("") +
+    ylab("Weapon quantity (SIPRI trend-indicator value)")
 ```
 
-```{r}
-c<-1:5
-cat(c[1])
+```{r anais multichart}
+
 ```
 
