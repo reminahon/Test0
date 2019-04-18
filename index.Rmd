@@ -4,7 +4,7 @@ author: "Anais HOAREAU, Sébastien MARCHAL, Rémi NAHON"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 mail: "anais.hoareau@mines-ales.org, sebastien.marchal@mines-ales.org, remi.nahon@mines-ales.org"
 linkedin: "rémi-nahon-609901160"
-logo: "images/USA_logo.png"
+logo: "images/fem.jpg"
 output:
   epuRate::epurate:
     toc: TRUE
@@ -28,8 +28,11 @@ library(rmarkdown)
 library(epuRate)      
 library(dplyr)
 library(ggplot2)
-library(hrbrthemes)
+#library(hrbrthemes)
 library(shiny)
+library(plotly)
+library(viridis)
+
 ```
 
 
@@ -38,9 +41,17 @@ library(shiny)
 data <- read.csv("data/gender_inequality.csv")
 # First visualization
 head(data, 10)
-#data$Gender.Inequality.Index..GII. <- as.numeric(levels(data$Gender.Inequality.Index..GII.))[data$Gender.Inequality.Index..GII.]
+# Changement du type des colonnes pour en faciliter la manipulation
 data$Gender.Inequality.Index..GII. <- as.numeric(as.character(data$Gender.Inequality.Index..GII.))
+data$Maternal.Mortality.Ratio <- as.numeric(as.character(data$Maternal.Mortality.Ratio))
+data$Adolescent.Birth.Rate <- as.numeric(as.character(data$Adolescent.Birth.Rate))
+data$Percent.Representation.in.Parliament <- as.numeric(as.character(data$Percent.Representation.in.Parliament))
+data$Population.with.Secondary.Education..Female. <- as.numeric(as.character(data$Population.with.Secondary.Education..Female.))
+data$Population.with.Secondary.Education..Male. <- as.numeric(as.character(data$Population.with.Secondary.Education..Male.))
+data$Labour.Force.Participation.Rate..Female. <- as.numeric(as.character(data$Labour.Force.Participation.Rate..Female.))
+data$Labour.Force.Participation.Rate..Male. <- as.numeric(as.character(data$Labour.Force.Participation.Rate..Male.))
 ```
+
 ```{r lollipop}
 data %>%
   filter(Gender.Inequality.Index..GII. != "..") %>%
@@ -56,7 +67,7 @@ data %>%
                   color = "grey") +
     geom_point(size=3, color="#69b3a2") +
     coord_flip() +
-    theme_ipsum() +
+    #theme_ipsum() +
     theme(panel.grid.minor.y = element_blank(),
           panel.grid.major.y = element_blank()) +
     xlab("") +
@@ -75,7 +86,7 @@ data %>%
                   color = "grey") +
     geom_point(size=3, color="#69b3a2") +
     coord_flip() +
-    theme_ipsum() +
+    #theme_ipsum() +
     theme(panel.grid.minor.y = element_blank(),
           panel.grid.major.y = element_blank()) +
     xlab("") +
@@ -85,10 +96,19 @@ data %>%
 ```{r anais multichart}
 # Basic ggplot
 p <- data %>%
-  mutate(myText=paste("This country is: " , Country )) %>%
-  ggplot( aes(x= Population.with.Secondary.Education..Female., y=Percent.Representation.in.Parliament, size = Adolescent.Birth.Rate, color = Country, text=myText)) +
-    geom_point(alpha=0.7) 
+  mutate(myText=paste(Country)) %>%
+  ggplot( aes(x= Population.with.Secondary.Education..Female., y=Population.with.Secondary.Education..Male., 
+              color = Maternal.Mortality.Ratio, text=myText)) +
+    geom_point() + 
+    scale_color_viridis(option = "D") +
+    theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        #axis.text.x = element_blank(),
+        #axis.text.y = element_blank(),
+        axis.ticks = element_blank())
 
 ggplotly(p, tooltip="text")
+
+#color = 
 ```
 
