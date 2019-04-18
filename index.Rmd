@@ -1,8 +1,8 @@
 ---
-title: "US Election : Comparison between states"
-author: "Rémi NAHON"
+title: "A Gender Inequalities Study "
+author: "Anais HOAREAU, Sébastien MARCHAL, Rémi NAHON"
 date: "`r format(Sys.time(), '%d %B %Y')`"
-mail: "remi.nahon@mines-ales.org"
+mail: "anais.hoareau@mines-ales.org, sebastien.marchal@mines-ales.org, remi.nahon@mines-ales.org"
 linkedin: "rémi-nahon-609901160"
 logo: "images/USA_logo.png"
 output:
@@ -12,8 +12,8 @@ output:
     code_folding: "hide"
 ---
 
-email avec un url de repository github
-readme avec le nom des 2/3 pers du groupe
+# Titre du rapport
+
 <br><br>
 
 ```{r setup, include=FALSE}
@@ -51,10 +51,11 @@ data %>%
   ggplot( aes(x=Average.of.Poverty.Rate.below.federal.poverty.threshold,
               y=Average.of.White..Not.Latino..Population, 
               color=Vote,
-              size=Average.of.Violent.crime, 
-              text = State)) +
+              size=Average.of.Violent.crime,)) +
     geom_point() + 
-  ggtitle("Countries with the population")
+    geom_label(label=data$State,  nudge_x = 0.25, 
+               nudge_y=3, color="black", size = 2.5) +
+    ggtitle("Countries with the population")
 ```
 
 ```{r}
