@@ -41,30 +41,19 @@ head(data, 10)
 ```
 
 ```{r lollipop}
-# Libraries
-
-
-# Load dataset from github
-data <- read.table("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/7_OneCatOneNum.csv", header=TRUE, sep=",")
-
-# Plot
 data %>%
-  filter(!is.na(Value)) %>%
-  arrange(Value) %>%
+  filter(Gender.Inequality.Index..GII. != "..") %>%
+  arrange(Gender.Inequality.Index..GII.) %>%
   tail(20) %>%
   mutate(Country=factor(Country, Country)) %>%
-  ggplot( aes(x=Country, y=Value) ) +
-    geom_segment( aes(x=Country ,xend=Country, y=0, yend=Value), color="grey") +
+  ggplot( aes(x=Country, y=Gender.Inequality.Index..GII.) ) +
+    geom_segment( aes(x=Country, xend=Country, y=0, yend=Gender.Inequality.Index..GII.),
+                  color="black") +
     geom_point(size=3, color="#69b3a2") +
     coord_flip() +
     theme_ipsum() +
-    theme(
-      panel.grid.minor.y = element_blank(),
-      panel.grid.major.y = element_blank(),
-      legend.position="none"
-    ) +
-    xlab("") +
-    ylab("Weapon quantity (SIPRI trend-indicator value)")
+    xlab() +
+    ylab("Gender Inequality Index")
 ```
 
 ```{r anais multichart}
