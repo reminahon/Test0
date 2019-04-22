@@ -40,7 +40,7 @@ library(gridExtra)
 data <- read.csv("data/gender_inequality.csv")
 # First visualization
 arrange(data, desc(data$Gender.Inequality.Index..GII.))
-tail(data, 20)
+head(data, 10)
 # Changement du type des colonnes pour en faciliter la manipulation
 data$Gender.Inequality.Index..GII. <- as.numeric(as.character(data$Gender.Inequality.Index..GII.))
 data$Maternal.Mortality.Ratio <- as.numeric(as.character(data$Maternal.Mortality.Ratio))
@@ -58,7 +58,7 @@ g1 = data %>%
   filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
   arrange(desc(Gender.Inequality.Index..GII.)) %>% 
   mutate(Country=factor(Country, Country)) %>%
-  tail(20)%>%
+  tail(15)%>%
   ggplot( aes(x=Country, y=Gender.Inequality.Index..GII.) ) +
     geom_segment( aes(x = Country, 
                       xend = Country,
@@ -71,7 +71,7 @@ g1 = data %>%
           panel.grid.major.y = element_blank()) +
     xlab("") +
     ylab("GII") + 
-    ggtitle("Gender Inequality Index \n Top 20 Countries")
+    ggtitle("Gender Inequality Index \n Top 15 Countries")
 
 g2 = data %>%
   filter(Gender.Inequality.Index..GII. != "..") %>% 
@@ -91,7 +91,7 @@ g2 = data %>%
           panel.grid.major.y = element_blank()) +
     xlab("") +
     ylab("GII")+
-    ggtitle("Gender Inequality Index \n Bottom 20 Countries")
+    ggtitle("Gender Inequality Index \n Bottom 15 Countries")
 
 g3 = data %>%
   filter(Gender.Inequality.Index..GII. != "..") %>% 
@@ -133,14 +133,12 @@ g3
 p <- data %>%
   mutate(myText=paste(Country)) %>%
   ggplot( aes(x= Population.with.Secondary.Education..Female., y=Population.with.Secondary.Education..Male., 
-              color = Maternal.Mortality.Ratio, text=myText)) +
+              color = Adolescent.Birth.Rate, text=myText)) +
     geom_point() + 
     scale_color_viridis(option = "D") +
     theme(panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
-        #axis.text.x = element_blank(),
-        #axis.text.y = element_blank(),
-        axis.ticks = element_blank())
+        axis.ticks = element_blank() )
 
 ggplotly(p, tooltip="text")
 
@@ -153,11 +151,13 @@ p <- data %>%
               color = Adolescent.Birth.Rate, text=myText)) +
     geom_point() + 
     scale_color_viridis(option = "D") +
+    xlab("Female population with secondary education") + 
+    ylab("Maternal mortality ratio") + 
     theme(
       panel.grid.minor.y = element_blank(),
       panel.grid.major.y = element_blank(),
       panel.grid.minor.x = element_blank(),
-      axis.ticks = element_blank())
+      axis.ticks = element_blank()) 
 
 ggplotly(p, tooltip="text")
 
