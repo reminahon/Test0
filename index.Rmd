@@ -28,11 +28,10 @@ library(rmarkdown)
 library(epuRate)      
 library(dplyr)
 library(ggplot2)
-#library(hrbrthemes)
 library(shiny)
 library(plotly)
 library(viridis)
-
+library(gridExtra)
 ```
 
 
@@ -40,7 +39,8 @@ library(viridis)
 # Loading of the data
 data <- read.csv("data/gender_inequality.csv")
 # First visualization
-head(data, 10)
+arrange(data, desc(data$Gender.Inequality.Index..GII.))
+tail(data, 20)
 # Changement du type des colonnes pour en faciliter la manipulation
 data$Gender.Inequality.Index..GII. <- as.numeric(as.character(data$Gender.Inequality.Index..GII.))
 data$Maternal.Mortality.Ratio <- as.numeric(as.character(data$Maternal.Mortality.Ratio))
@@ -53,10 +53,10 @@ data$Labour.Force.Participation.Rate..Male. <- as.numeric(as.character(data$Labo
 ```
 
 ```{r lollipop}
-data %>%
-  filter(Gender.Inequality.Index..GII. != "..") %>%
-  filter(!is.na(GII.Rank)) %>%
-  arrange(desc(Gender.Inequality.Index..GII.)) %>%
+g1 = data %>%
+  filter(Gender.Inequality.Index..GII. != "..") %>% # Elimination of the countries without GII data
+  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
+  arrange(desc(Gender.Inequality.Index..GII.)) %>% 
   mutate(Country=factor(Country, Country)) %>%
   tail(20)%>%
   ggplot( aes(x=Country, y=Gender.Inequality.Index..GII.) ) +
@@ -65,32 +65,67 @@ data %>%
                       y = 0,
                       yend = Gender.Inequality.Index..GII.),
                   color = "grey") +
-    geom_point(size=3, color="#69b3a2") +
+    geom_point(size=3, color="#7baeff") +
     coord_flip() +
-    #theme_ipsum() +
     theme(panel.grid.minor.y = element_blank(),
           panel.grid.major.y = element_blank()) +
     xlab("") +
-    ylab("Gender Inequality Index")
+    ylab("GII") + 
+    ggtitle("Gender Inequality Index \n Top 20 Countries")
 
-data %>%
-  filter(Gender.Inequality.Index..GII. != "..") %>%
+g2 = data %>%
+  filter(Gender.Inequality.Index..GII. != "..") %>% 
+  filter(!is.na(GII.Rank)) %>% 
   arrange(desc(Gender.Inequality.Index..GII.)) %>%
   mutate(Country=factor(Country, Country)) %>%
-  head(20)%>%
+  head(15)%>%
+  ggplot( aes(x=Country, y=Gender.Inequality.Index..GII.) ) +
+    geom_segment( aes(x = Country, 
+                      xend = Country,
+                      y = 0.55,
+                      yend = Gender.Inequality.Index..GII.),
+                  color = "grey") +
+    geom_point(size=3, color="#d071ff") +
+    coord_flip() +
+    theme(panel.grid.minor.y = element_blank(),
+          panel.grid.major.y = element_blank()) +
+    xlab("") +
+    ylab("GII")+
+    ggtitle("Gender Inequality Index \n Bottom 20 Countries")
+
+g3 = data %>%
+  filter(Gender.Inequality.Index..GII. != "..") %>% 
+  filter(is.na(GII.Rank)) %>%
+  filter(Country != "World") %>% # Selection of continent datas
+  arrange(desc(Gender.Inequality.Index..GII.)) %>%
+  mutate(Country=factor(Country, Country)) %>%
   ggplot( aes(x=Country, y=Gender.Inequality.Index..GII.) ) +
     geom_segment( aes(x = Country, 
                       xend = Country,
                       y = 0,
                       yend = Gender.Inequality.Index..GII.),
                   color = "grey") +
-    geom_point(size=3, color="#69b3a2") +
+    geom_point(size=3, color="#ffb57b") +
     coord_flip() +
-    #theme_ipsum() +
     theme(panel.grid.minor.y = element_blank(),
           panel.grid.major.y = element_blank()) +
     xlab("") +
-    ylab("Gender Inequality Index")
+    ylab("Medium GII")+
+    ggtitle("Gender Inequality Index \n Continent indexes") +
+    geom_hline(yintercept=0.449, color="#7baeff", size=1) +
+    annotate("text", x = 3.5 , y = 0.5, label = "World GII" , color="#7baeff", size=3 , angle=0, fontface="bold") +
+    geom_hline(yintercept=0.016, color="#2ec212", size=1) +
+    annotate("text", x = 3.5 , y = 0.08, label = "Lowest GII\nSlovenia", color="#2ec212", size=3 , angle=0, fontface="bold") +
+    geom_hline(yintercept=0.744, color="#da7855", size=1) +
+    annotate("text", x = 3.5 , y = 0.68
+             , label = "Highest GII\nYemen" , color="#da7855", size=3 , angle=0, fontface="bold")
+  
+
+
+g1
+g2
+g3
+
 ```
 
 ```{r anais multichart}
@@ -109,6 +144,22 @@ p <- data %>%
 
 ggplotly(p, tooltip="text")
 
-#color = 
+```
+
+```{r}
+p <- data %>%
+  mutate(myText=paste(Country)) %>%
+  ggplot( aes(x= Population.with.Secondary.Education..Female., y=Maternal.Mortality.Ratio , 
+              color = Adolescent.Birth.Rate, text=myText)) +
+    geom_point() + 
+    scale_color_viridis(option = "D") +
+    theme(
+      panel.grid.minor.y = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      axis.ticks = element_blank())
+
+ggplotly(p, tooltip="text")
+
 ```
 
