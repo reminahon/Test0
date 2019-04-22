@@ -32,6 +32,7 @@ library(shiny)
 library(plotly)
 library(viridis)
 library(gridExtra)
+library(rgdal)
 ```
 
 
@@ -130,7 +131,7 @@ g3
 
 ```{r anais multichart}
 # Basic ggplot
-p <- data %>%
+secEd <- data %>%
   mutate(myText=paste(Country)) %>%
   ggplot( aes(x= Population.with.Secondary.Education..Female., y=Population.with.Secondary.Education..Male., 
               color = Adolescent.Birth.Rate, text=myText)) +
@@ -138,9 +139,9 @@ p <- data %>%
     scale_color_viridis(option = "D") +
     theme(panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
-        axis.ticks = element_blank() )
-
-ggplotly(p, tooltip="text")
+        axis.ticks = element_blank() ) + 
+    annotate("segment", x = 0, xend = 100, y = 0, yend = 100, colour = "purple", size=1, alpha=0.4)
+ggplotly(secEd, tooltip="text")
 
 ```
 
