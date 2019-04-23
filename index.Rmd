@@ -87,19 +87,25 @@ data$Labour.Force.Participation.Rate..Male. <- as.numeric(as.character(data$Labo
 # Classements GII
 
 Les graphiques ci-dessous présentent le classement des pays par GII. 
-Nous avons choisi d'utiliser des lollipop plot étant dans un cas ou nous représentons des données numériques (GII) par rapport à des données catégoriques (nom des pays)
-Par souci de lisibilité, nous avons décidé de ne pas tout afficher à la fois mais de présenter d'abord les 15 pays au niveau d'inégalité le plus bas (GII le plus faible) avant de passer aux 15 les plus inégalitaires et enfin de donner une vue d'ensemble par région du monde.
+Nous avons choisi d'utiliser des lollipop plot étant dans un cas ou nous représentons des données numériques (GII) par rapport à des données catégoriques (nom des pays), ce qui nous a dirigé vers un barplot. Pour parer au cas de nombreuses valeurs similaires qui rendraient ce graphique illisible, nous avons opté pour un lollipop plot.
+Par souci de lisibilité, nous avons de plus décidé de ne pas tout afficher à la fois mais de présenter d'abord les 15 pays au niveau d'inégalité le plus bas (GII le plus faible) avant de passer aux 15 les plus inégalitaires et enfin de donner une vue d'ensemble par région du monde.
 <br> 
 
 ## Top 15 Countries  
 ```{r top15_lollipop}
 p1 = data %>%
-  filter(Gender.Inequality.Index..GII. != "..") %>% # Elimination of the countries without GII data
-  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
-  mutate(myText=paste(Gender.Inequality.Index..GII.)) %>%
+   # Elimination des pays dont on n'a pas le GII
+  filter(Gender.Inequality.Index..GII. != "..") %>% 
+  # Elimination des donnees continent et monde
+  filter(!is.na(GII.Rank)) %>% 
+  # Definition du texte qui apparait quand on passe la souris sur un point
+  mutate(myText=paste(Gender.Inequality.Index..GII.)) %>% 
+  # Classement des pays par ordre decroissant de GII
   arrange(desc(Gender.Inequality.Index..GII.)) %>% 
   mutate(Country=factor(Country, Country)) %>%
+  # Conservation des 15 derniers pays de la liste classee (les 15 pays au GII le plus faible)
   tail(15)%>%
+  # Affichage
   ggplot( aes(x=Country, y=Gender.Inequality.Index..GII., text = myText) ) +
     geom_segment( aes(x = Country, 
                       xend = Country,
@@ -107,12 +113,15 @@ p1 = data %>%
                       yend = Gender.Inequality.Index..GII.),
                   color = "grey") +
     geom_point(size=3, color="#7baeff") +
+    # inversion des coordonnees
     coord_flip() +
     theme(panel.grid.minor.y = element_blank(),
           panel.grid.major.y = element_blank()) +
+    #definition des noms des axes et du titre
     xlab("") +
     ylab("GII") + 
     ggtitle("Gender Inequality Index : Top 15 Countries")
+# Affichage interactif du graph
 ggplotly(p1, tooltip = "text")
 ```
 <br>
@@ -154,10 +163,13 @@ On relève ici les pays au GII le plus bas, avec tout en bas du classement, 3 pa
 ```{r global_lollipop}
 data %>%
   filter(Gender.Inequality.Index..GII. != "..") %>% 
+  # Selection des donnees "zones geographiques"
   filter(is.na(GII.Rank)) %>%
-  filter(Country != "World") %>% # Selection of continent datas
+  filter(Country != "World") %>% 
+  # Classement par ordre croissant
   arrange(desc(Gender.Inequality.Index..GII.)) %>%
   mutate(Country=factor(Country, Country)) %>%
+  # Affichage
   ggplot( aes(x=Country, y=Gender.Inequality.Index..GII.) ) +
     geom_segment( aes(x = Country, 
                       xend = Country,
@@ -171,13 +183,13 @@ data %>%
     xlab("") +
     ylab("Medium GII")+
     ggtitle("Gender Inequality Index : Continent indexes") +
+    # Annotations de lignes verticales (GII mondial, GII extremes..)
     geom_hline(yintercept=0.449, color="#7baeff", size=1) +
     annotate("text", x = 3.5 , y = 0.5, label = "World GII" , color="#7baeff", size=3 , angle=0, fontface="bold") +
     geom_hline(yintercept=0.016, color="#2ec212", size=1) +
     annotate("text", x = 3.5 , y = 0.08, label = "Lowest GII\nSlovenia", color="#2ec212", size=3 , angle=0, fontface="bold") +
     geom_hline(yintercept=0.744, color="#da7855", size=1) +
-    annotate("text", x = 3.5 , y = 0.68
-             , label = "Highest GII\nYemen" , color="#da7855", size=3 , angle=0, fontface="bold")
+    annotate("text", x = 3.5 , y = 0.68, label = "Highest GII\nYemen" , color="#da7855", size=3 , angle=0, fontface="bold")
 ```
 <br>
 Dans ce dernier graphe, nous avons affiché un classement plus général, par large zones géographiques. Pour observer l'échelle de ces indices par rapport aux deux premiers graphiques, nous avons affiché les GII extrêmes (0.016 pour la Slovénie et 0.744 pour le Yemen) ainsi que la moyenne mondiale (de 0.449).
@@ -188,12 +200,15 @@ On observe comme attendu une opposition entre pays dits "du Nord", aux indices l
 
 # Etude de l'accès à l'éducation 
 ##Différences inter-genre
-Tout d'abord nous avons voulu observer les différences d'accès à l'éducation selon le genre. 
+Tout d'abord nous avons voulu observer les différences d'accès à l'éducation selon le genre. Pour ce graphique et le suivant, nous avons opté pour un scatterplot (dans la mesure où nous travaillons sur des )
 ```{r}
-# Basic ggplot
+
 secEd <- data %>%
-  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
+  # Elimination des donnees monde et continents
+  filter(!is.na(GII.Rank)) %>% 
+  # Definition du texte affiché quand on passe sur un point (Pays)
   mutate(myText=paste(Country)) %>%
+  # Affichage
   ggplot( aes(x= Population.with.Secondary.Education..Female., 
               y=Population.with.Secondary.Education..Male. - Population.with.Secondary.Education..Female.,
               text=myText)) +
@@ -203,8 +218,10 @@ secEd <- data %>%
         axis.ticks = element_blank() ) + 
     xlab("Proportion of female population with secondary education")+
     ylab("Difference male-female in access to secondary education") +
+    # Annotation : droite y=0
     annotate("segment", x = 0, xend = 100, y = 0, yend = 0, colour = "purple", size=1, alpha=1)
 
+# Affichage interactif
 ggplotly(secEd, tooltip="text")
 ```
 <br>
@@ -216,10 +233,11 @@ On observe, comme on pouvait s'y attendre, que dans une grande majorité de pays
 Dans le graphique suivant, nous avons voulu étudier l'impact de l'accès à l'éducation secondaire sur l'*"Adolescent Birth Rate"* et vérifier si l'inégalité de cet accès entre hommes et femmes avait un impact sur ce résultat.
 
 ```{r sec_ed_ado}
-# Basic ggplot
-secEd <- data %>%
-  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
+secEd2 <- data %>%
+  #Selection des donnees "zones geographiques"
+  filter(!is.na(GII.Rank)) %>% 
   mutate(myText=paste(Country)) %>%
+  # Affichage
   ggplot( aes(x= Population.with.Secondary.Education..Female.,
       y=Population.with.Secondary.Education..Male., 
       color = Adolescent.Birth.Rate, text=myText)) +
@@ -230,9 +248,11 @@ secEd <- data %>%
         axis.ticks = element_blank() ) + 
     xlab("Proportion of female population with secondary education") +
     ylab("Proportion of male population with secondary education")+
+    # annotation : droite y=x
     annotate("segment", x = 0, xend = 100, y = 0, yend = 100, colour = "purple", size=1, alpha=0.4)
 
-ggplotly(secEd, tooltip="text")
+# Affichage interactif
+ggplotly(secEd2, tooltip="text")
 ```
 <br>
 Dans ce graphique, on observe une corrélation entre accès à l'éducation et taux de grossesses entre 15 et 19 ans dans la mesure où les taux supérieurs à 100 grossesses pour 1000 adolescentes sont presque tous situés dans le cadran bas-gauche (ie x<50, y<50).
