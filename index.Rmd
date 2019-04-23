@@ -8,7 +8,7 @@ logo: "images/fem.jpg"
 output:
   epuRate::epurate:
     toc: TRUE
-    number_sections: FALSE
+    number_sections: 3
     code_folding: "hide"
 ---
 
@@ -68,11 +68,11 @@ library(gridExtra)
 ```
 
 
-```{r data_load}
+```{r data_load, echo = FALSE}
 # Chargement des données
 data <- read.csv("data/gender_inequality.csv")
 # Première visualisation des données
-head(data, 150)
+head(data, 20)
 # Changement du type des colonnes pour en faciliter la manipulation
 data$Gender.Inequality.Index..GII. <- as.numeric(as.character(data$Gender.Inequality.Index..GII.))
 data$Maternal.Mortality.Ratio <- as.numeric(as.character(data$Maternal.Mortality.Ratio))
@@ -84,9 +84,10 @@ data$Labour.Force.Participation.Rate..Female. <- as.numeric(as.character(data$La
 data$Labour.Force.Participation.Rate..Male. <- as.numeric(as.character(data$Labour.Force.Participation.Rate..Male.))
 ```
 
-# Classement des pays en fonction de l'indice d'innégalité
+# Classements GII
 
 Les graphiques ci-dessous présentent le classement des pays par GII. 
+Nous avons choisi d'utiliser des lollipop plot étant dans un cas ou nous représentons des données numériques (GII) par rapport à des données catégoriques (nom des pays)
 Par souci de lisibilité, nous avons décidé de ne pas tout afficher à la fois mais de présenter d'abord les 15 pays au niveau d'inégalité le plus bas (GII le plus faible) avant de passer aux 15 les plus inégalitaires et enfin de donner une vue d'ensemble par région du monde.
 <br> 
 
@@ -114,11 +115,10 @@ p1 = data %>%
     ggtitle("Gender Inequality Index : Top 15 Countries")
 ggplotly(p1, tooltip = "text")
 ```
+<br>
 On constate que la Slovénie est le pays le plus égalitaire sur le plan du genre avec un GII de 0.016, suivie par la Suisse et l'Allemagne (respectivement à 0.028 et 0.041). La France est en treizième position avec un indice de 0.088.
 On remarque qu'à l'exception de Singapore, la totalité de ces premiers pays du classement sont européens.
 <br>
-<br>
-
 
 ## Bottom 15 Countries
 ```{r bot15_lollipop}
@@ -146,9 +146,10 @@ p2 = data %>%
   
 ggplotly(p2, tooltip = "text")
 ```
+<br>
 On relève ici les pays au GII le plus bas, avec tout en bas du classement, 3 pays à l'indice supérieur à 0.70 : le Chad, le Niger et le Yemen.
 <br>
-<br>
+
 ## Global View
 ```{r global_lollipop}
 data %>%
@@ -182,13 +183,11 @@ data %>%
 Dans ce dernier graphe, nous avons affiché un classement plus général, par large zones géographiques. Pour observer l'échelle de ces indices par rapport aux deux premiers graphiques, nous avons affiché les GII extrêmes (0.016 pour la Slovénie et 0.744 pour le Yemen) ainsi que la moyenne mondiale (de 0.449).
 On observe comme attendu une opposition entre pays dits "du Nord", aux indices les plus faibles et ceux dits "du Sud".
 <br>
-<br><br>
+<br>
 
 
 # Etude de l'accès à l'éducation 
-Nous avons ensuite décidé de nous focaliser sur l'accès à l'éducation.
-
-##Différences homme-femme
+##Différences inter-genre
 Tout d'abord nous avons voulu observer les différences d'accès à l'éducation selon le genre. 
 ```{r}
 # Basic ggplot
@@ -208,13 +207,14 @@ secEd <- data %>%
 
 ggplotly(secEd, tooltip="text")
 ```
-On observe, comme on pouvait s'y attendre que dans une grande majorité de pays, l'accès à l'éducation est plus largement réservé aux Males qu'aux Females. De plus on observe que plus l'accès à l'éducation des Females augmente et plus l'écart rétrécit : les pays au plus grand accès à l'éducation semblent faire moins de différences entre les genres.
+<br>
+On observe, comme on pouvait s'y attendre, que dans une grande majorité de pays, l'accès à l'éducation est plus largement réservé aux Males qu'aux Females. De plus on observe que plus l'accès à l'éducation des Females augmente et plus l'écart rétrécit : les pays au plus grand accès à l'éducation semblent faire moins de différences entre les genres.
 <br> 
 
 ## Effets sur l'Adolescent Birth Rate
 <br>
 Dans le graphique suivant, nous avons voulu étudier l'impact de l'accès à l'éducation secondaire sur l'*"Adolescent Birth Rate"* et vérifier si l'inégalité de cet accès entre hommes et femmes avait un impact sur ce résultat.
-<br>
+
 ```{r sec_ed_ado}
 # Basic ggplot
 secEd <- data %>%
@@ -234,6 +234,7 @@ secEd <- data %>%
 
 ggplotly(secEd, tooltip="text")
 ```
+<br>
 Dans ce graphique, on observe une corrélation entre accès à l'éducation et taux de grossesses entre 15 et 19 ans dans la mesure où les taux supérieurs à 100 grossesses pour 1000 adolescentes sont presque tous situés dans le cadran bas-gauche (ie x<50, y<50).
 Toutefois on n'observe pas de différence significative lorsque l'écart grandit ou au contraire lorsque la tendance s'inverse. Une population qui n'accède pas à l'éducation secondaire ne semble pas diminuer son taux de "naissances adolescentes" en diminuant les inégalités d'accès mais plutôt en augmentant l'accès de tous.
 
