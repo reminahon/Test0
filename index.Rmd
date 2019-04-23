@@ -186,14 +186,11 @@ On observe comme attendu une opposition entre pays dits "du Nord", aux indices l
 <br><br>
 
 
-# Influence de l'éducation sur les naissances
-
-
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Le graphe ci-dessous présente l'évolution du taux de mères adoléscentes en fonction de l'accès aux études secondaires des hommes et des femmes.  
-On voit que le niveaux d'étude semble avoir un fort impact sur ce taux, plus le niveaux d'études augmente dans le monde moins les mères ont des enfants jeunes.  
-La faible dispertion autour de la droite permet également d'affirmer que l'accès aux études secondaires est quasiment équivalent pour les hommes et les femmes en moyenne dans chaques pays ce qui montre que cet indice n'a que peu d'impact sur l'indice d'innégalité de genre.
-```{r anais multichart}
+# Etude de l'accès à l'éducation 
+<br>
+Dans le graphique suivant, nous avons voulu étudier l'impact de l'accès à l'éducation secondaire sur l'*"Adolescent Birth Rate"* et vérifier si l'inégalité de cet accès entre hommes et femmes avait un impact sur ce résultat.
+<br>
+```{r sec_ed_ado}
 # Basic ggplot
 secEd <- data %>%
   filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
