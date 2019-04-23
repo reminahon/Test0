@@ -88,9 +88,9 @@ data$Labour.Force.Participation.Rate..Male. <- as.numeric(as.character(data$Labo
 
 Les graphiques ci-dessous présentent le classement des pays par GII. 
 Par souci de lisibilité, nous avons décidé de ne pas tout afficher à la fois mais de présenter d'abord les 15 pays au niveau d'inégalité le plus bas (GII le plus faible) avant de passer aux 15 les plus inégalitaires et enfin de donner une vue d'ensemble par région du monde.
+<br> 
 
 ## Top 15 Countries  
-
 ```{r top15_lollipop}
 p1 = data %>%
   filter(Gender.Inequality.Index..GII. != "..") %>% # Elimination of the countries without GII data
@@ -121,7 +121,6 @@ On remarque qu'à l'exception de Singapore, la totalité de ces premiers pays du
 
 
 ## Bottom 15 Countries
-<br>
 ```{r bot15_lollipop}
 
 p2 = data %>%
@@ -151,7 +150,6 @@ On relève ici les pays au GII le plus bas, avec tout en bas du classement, 3 pa
 <br>
 <br>
 ## Global View
-<br>
 ```{r global_lollipop}
 data %>%
   filter(Gender.Inequality.Index..GII. != "..") %>% 
@@ -180,6 +178,7 @@ data %>%
     annotate("text", x = 3.5 , y = 0.68
              , label = "Highest GII\nYemen" , color="#da7855", size=3 , angle=0, fontface="bold")
 ```
+<br>
 Dans ce dernier graphe, nous avons affiché un classement plus général, par large zones géographiques. Pour observer l'échelle de ces indices par rapport aux deux premiers graphiques, nous avons affiché les GII extrêmes (0.016 pour la Slovénie et 0.744 pour le Yemen) ainsi que la moyenne mondiale (de 0.449).
 On observe comme attendu une opposition entre pays dits "du Nord", aux indices les plus faibles et ceux dits "du Sud".
 <br>
@@ -187,6 +186,32 @@ On observe comme attendu une opposition entre pays dits "du Nord", aux indices l
 
 
 # Etude de l'accès à l'éducation 
+Nous avons ensuite décidé de nous focaliser sur l'accès à l'éducation.
+
+##Différences homme-femme
+Tout d'abord nous avons voulu observer les différences d'accès à l'éducation selon le genre. 
+```{r}
+# Basic ggplot
+secEd <- data %>%
+  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
+  mutate(myText=paste(Country)) %>%
+  ggplot( aes(x= Population.with.Secondary.Education..Female., 
+              y=Population.with.Secondary.Education..Male. - Population.with.Secondary.Education..Female.,
+              text=myText)) +
+    geom_point() + 
+    theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        axis.ticks = element_blank() ) + 
+    xlab("Proportion of female population with secondary education")+
+    ylab("Difference male-female in access to secondary education") +
+    annotate("segment", x = 0, xend = 100, y = 0, yend = 0, colour = "purple", size=1, alpha=1)
+
+ggplotly(secEd, tooltip="text")
+```
+On observe, comme on pouvait s'y attendre que dans une grande majorité de pays, l'accès à l'éducation est plus largement réservé aux Males qu'aux Females. De plus on observe que plus l'accès à l'éducation des Females augmente et plus l'écart rétrécit : les pays au plus grand accès à l'éducation semblent faire moins de différences entre les genres.
+<br> 
+
+## Effets sur l'Adolescent Birth Rate
 <br>
 Dans le graphique suivant, nous avons voulu étudier l'impact de l'accès à l'éducation secondaire sur l'*"Adolescent Birth Rate"* et vérifier si l'inégalité de cet accès entre hommes et femmes avait un impact sur ce résultat.
 <br>
@@ -209,92 +234,8 @@ secEd <- data %>%
 
 ggplotly(secEd, tooltip="text")
 ```
-On observe, comme attendu que la plupart des pays sont au-dessus de la courbe y=x, c'est-à-dire qu'il y a en grande majorité
-```{r}
-# Basic ggplot
-secEd <- data %>%
-  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
-  mutate(myText=paste(Country)) %>%
-  ggplot( aes(x= Population.with.Secondary.Education..Female., y=Population.with.Secondary.Education..Male. - Population.with.Secondary.Education..Female., 
-      color = Adolescent.Birth.Rate, text=myText)) +
-    geom_point() + 
-    scale_color_viridis(option = "D") +
-    theme(panel.grid.minor.y = element_blank(),
-        panel.grid.major.y = element_blank(),
-        axis.ticks = element_blank() ) + 
-    xlab("Proportion of female population with secondary education")+
-    ylab("Difference male-female in access to secondary education") +
-    annotate("segment", x = 0, xend = 100, y = 0, yend = 0, colour = "purple", size=1, alpha=0.4)
-
-ggplotly(secEd, tooltip="text")
-```
+Dans ce graphique, on observe une corrélation entre accès à l'éducation et taux de grossesses entre 15 et 19 ans dans la mesure où les taux supérieurs à 100 grossesses pour 1000 adolescentes sont presque tous situés dans le cadran bas-gauche (ie x<50, y<50).
+Toutefois on n'observe pas de différence significative lorsque l'écart grandit ou au contraire lorsque la tendance s'inverse. Une population qui n'accède pas à l'éducation secondaire ne semble pas diminuer son taux de "naissances adolescentes" en diminuant les inégalités d'accès mais plutôt en augmentant l'accès de tous.
 
 
 
-
-```{r}
-p <- data %>%
-  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
-  mutate(myText=paste(Country)) %>%
-  ggplot( aes(x= Population.with.Secondary.Education..Male.,
-              y=Labour.Force.Participation.Rate..Male. , 
-              color = Gender.Inequality.Index..GII., text=myText)) +
-    geom_point() + 
-    scale_color_viridis(option = "D") +
-    xlab("Male population with secondary education") + 
-    ylab("Male labour") + 
-    theme(
-      panel.grid.minor.y = element_blank(),
-      panel.grid.major.y = element_blank(),
-      panel.grid.minor.x = element_blank(),
-      axis.ticks = element_blank()) 
-
-#ggplotly(p, tooltip="text")
-p
-
-```
-
-```{r}
-p2 <- data %>%
-  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
-  mutate(myText=paste(Country)) %>%
-  ggplot( aes(x= Population.with.Secondary.Education..Female.,
-              y=Labour.Force.Participation.Rate..Female. , 
-              color = Gender.Inequality.Index..GII., text=myText)) +
-    geom_point() + 
-    scale_color_viridis(option = "D") +
-    xlab("Female population with secondary education") + 
-    ylab("Female labour") + 
-    theme(
-      panel.grid.minor.y = element_blank(),
-      panel.grid.major.y = element_blank(),
-      panel.grid.minor.x = element_blank(),
-      axis.ticks = element_blank()) 
-
-#ggplotly(p, tooltip="text")
-p2
-
-```
-
-
-```{r}
-p2 <- data %>%
-  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
-  mutate(myText=paste(Country)) %>%
-  ggplot( aes(x= Population.with.Secondary.Education..Female.,
-              y=Gender.Inequality.Index..GII., 
-              text=myText)) +
-    geom_point() + 
-    scale_color_viridis(option = "D") +
-    xlab("Female population with secondary education") + 
-    ylab("Female labour") + 
-    theme(
-      panel.grid.minor.y = element_blank(),
-      panel.grid.major.y = element_blank(),
-      panel.grid.minor.x = element_blank(),
-      axis.ticks = element_blank()) 
-
-#ggplotly(p, tooltip="text")
-p2
-
-```
