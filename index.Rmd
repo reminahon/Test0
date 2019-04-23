@@ -12,7 +12,25 @@ output:
     code_folding: "hide"
 ---
 
-# Titre du rapport
+# Présentation
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ce document vise à étudier les innégalités entre hommes et femmes à travers le monde. Les données portes sur 188 pays et comparent les genres selon trois axes : la santé, l'autonomie, et leur présence sur le marché du travail.  
+Dans les colonnes du jeu de données on a donc les informations suivantes :
+
++ les pays
++ l'indice d'innégalité de genre
++ le taux de mortalité maternelle lié à un accouchement
++ le taux de mères adolescentes
++ le taux de femmes au parlement
++ le taux de personnes ayant fait des études secondaires (homme et femme)
++ le taux d'activité professionnel (homme et femme)
+
+L'indice d'innégalité de genre est calculé à partir de tous les autres comme le montre le shéma suivant.
+
+
+![](images/index_creation.png)
 
 <br><br>
 
@@ -32,7 +50,7 @@ library(shiny)
 library(plotly)
 library(viridis)
 library(gridExtra)
-library(rgdal)
+#library(rgdal)
 ```
 
 
@@ -52,6 +70,19 @@ data$Population.with.Secondary.Education..Male. <- as.numeric(as.character(data$
 data$Labour.Force.Participation.Rate..Female. <- as.numeric(as.character(data$Labour.Force.Participation.Rate..Female.))
 data$Labour.Force.Participation.Rate..Male. <- as.numeric(as.character(data$Labour.Force.Participation.Rate..Male.))
 ```
+
+# Comparaison des pays en fonction de l'indice d'innégalité
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Les trois graphes ci-dessous permettent de comparer les pays selon les innégalités entre hommes et femmes.  
+  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Le premier graphe, intitulé "top 15 countries" classe et affiche les 15 pays dans lesquels les innégalités sont les plus faibles. On constate que c'est la Slovenie qui est le pays le plus égalitaire suivie par la Suisse et l'Allemagne. La France est en treizième position. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Le second graphe est équivalant au premier mais présente les 15 pays qui on les plus forts taux d'innégalités avec en dernières positions le Chad, le Niger et le Yemen.  
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Le dernier graphe présente les innégalités par continent et permet de se rendre compte de l'étendue de celle-ce à travers le monde. En effet l'indice d'innégalité va de la droites verte (la Slovénie), à la droite rouge (le Yemen). On voit également qu'en moyenne les continents de l'hémisphère sud sont moins égalitaires.
+
 
 ```{r lollipop}
 g1 = data %>%
@@ -129,38 +160,121 @@ g3
 
 ```
 
+
+# Influence de l'éducation sur les naissances
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Le graphe ci-dessous présente l'évolution du taux de mères adoléscentes en fonction de l'accès aux études secondaires des hommes et des femmes.  
+On voit que le niveaux d'étude semble avoir un fort impact sur ce taux, plus le niveaux d'études augmente dans le monde moins les mères ont des enfants jeunes.  
+La faible dispertion autour de la droite permet également d'affirmer que l'accès aux études secondaires est quasiment équivalent pour les hommes et les femmes en moyenne dans chaques pays ce qui montre que cet indice n'a que peu d'impact sur l'indice d'innégalité de genre.
 ```{r anais multichart}
 # Basic ggplot
 secEd <- data %>%
+  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
   mutate(myText=paste(Country)) %>%
-  ggplot( aes(x= Population.with.Secondary.Education..Female., y=Population.with.Secondary.Education..Male., 
-              color = Adolescent.Birth.Rate, text=myText)) +
+  ggplot( aes(x= Population.with.Secondary.Education..Female.,
+      y=Population.with.Secondary.Education..Male., 
+      color = Adolescent.Birth.Rate, text=myText)) +
     geom_point() + 
     scale_color_viridis(option = "D") +
     theme(panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
         axis.ticks = element_blank() ) + 
-    annotate("segment", x = 0, xend = 100, y = 0, yend = 100, colour = "purple", size=1, alpha=0.4)
-ggplotly(secEd, tooltip="text")
+    annotate("segment", x = 0, xend = 100, y = 10, yend = 100, colour = "purple", size=1, alpha=0.4)
+#ggplotly(secEd, tooltip="text")
+secEd
 
 ```
 
 ```{r}
 p <- data %>%
+  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
   mutate(myText=paste(Country)) %>%
-  ggplot( aes(x= Population.with.Secondary.Education..Female., y=Maternal.Mortality.Ratio , 
+  ggplot( aes(x= Population.with.Secondary.Education..Female.,
+              y=Labour.Force.Participation.Rate..Female. , 
               color = Adolescent.Birth.Rate, text=myText)) +
     geom_point() + 
     scale_color_viridis(option = "D") +
     xlab("Female population with secondary education") + 
-    ylab("Maternal mortality ratio") + 
+    ylab("Female labour") + 
     theme(
       panel.grid.minor.y = element_blank(),
       panel.grid.major.y = element_blank(),
       panel.grid.minor.x = element_blank(),
       axis.ticks = element_blank()) 
 
-ggplotly(p, tooltip="text")
+#ggplotly(p, tooltip="text")
+p
 
 ```
 
+
+
+
+```{r}
+p <- data %>%
+  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
+  mutate(myText=paste(Country)) %>%
+  ggplot( aes(x= Population.with.Secondary.Education..Male.,
+              y=Labour.Force.Participation.Rate..Male. , 
+              color = Gender.Inequality.Index..GII., text=myText)) +
+    geom_point() + 
+    scale_color_viridis(option = "D") +
+    xlab("Male population with secondary education") + 
+    ylab("Male labour") + 
+    theme(
+      panel.grid.minor.y = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      axis.ticks = element_blank()) 
+
+#ggplotly(p, tooltip="text")
+p
+
+```
+
+```{r}
+p2 <- data %>%
+  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
+  mutate(myText=paste(Country)) %>%
+  ggplot( aes(x= Population.with.Secondary.Education..Female.,
+              y=Labour.Force.Participation.Rate..Female. , 
+              color = Gender.Inequality.Index..GII., text=myText)) +
+    geom_point() + 
+    scale_color_viridis(option = "D") +
+    xlab("Female population with secondary education") + 
+    ylab("Female labour") + 
+    theme(
+      panel.grid.minor.y = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      axis.ticks = element_blank()) 
+
+#ggplotly(p, tooltip="text")
+p2
+
+```
+
+
+```{r}
+p2 <- data %>%
+  filter(!is.na(GII.Rank)) %>% # Elimination of the world and continent datas
+  mutate(myText=paste(Country)) %>%
+  ggplot( aes(x= Population.with.Secondary.Education..Female.,
+              y=Gender.Inequality.Index..GII., 
+              text=myText)) +
+    geom_point() + 
+    scale_color_viridis(option = "D") +
+    xlab("Female population with secondary education") + 
+    ylab("Female labour") + 
+    theme(
+      panel.grid.minor.y = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      axis.ticks = element_blank()) 
+
+#ggplotly(p, tooltip="text")
+p2
+
+```
