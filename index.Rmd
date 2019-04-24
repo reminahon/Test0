@@ -203,7 +203,7 @@ On observe comme attendu une opposition entre pays dits "du Nord", aux indices l
 
 # Etude de l'accès à l'éducation 
 ##Différences inter-genre
-Tout d'abord nous avons voulu observer les différences d'accès à l'éducation selon le genre. Pour ce graphique et le suivant, nous avons opté pour un scatterplot (dans la mesure où nous travaillons sur des )
+Tout d'abord nous avons voulu observer les différences d'accès à l'éducation selon le genre. Pour ce graphique et le suivant, nous avons opté pour un scatterplot (dans la mesure où nous travaillons sur des données numériques que nous croisons) et placé une droite représentant un accès égal à l'éducation pour les genres, pour pouvoir observer l'écart présent dans chaque pays.
 ```{r}
 secEd <- data %>%
   # Elimination des donnees monde et continents
