@@ -32,17 +32,19 @@ Dans les colonnes du jeu de données, on a donc les informations suivantes :
 
 Le schéma suivant décrit l'association de ces différents paramètres dans la création du GII.
 
-![](images/index_creation.png)
+![*image extraite du site www.kaggle.com*](images/index_creation.png)
 
 <br><br>
 
 ```{r setup, include=FALSE}
+
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, tidy = TRUE, 
                       message = FALSE, fig.align = "center", eval = TRUE)
 ```
 
 
 ```{r import_libraries, echo = FALSE}
+
 #Import des librairies utiles 
 library(tidyverse)
 library(rmarkdown)    
@@ -69,10 +71,12 @@ library(gridExtra)
 
 
 ```{r data_load, echo = FALSE}
+
 # Chargement des données
 data <- read.csv("data/gender_inequality.csv")
 # Première visualisation des données
-# head(data, 20)
+  # head(data, 20)
+
 # Changement du type des colonnes pour en faciliter la manipulation
 data$Gender.Inequality.Index..GII. <- as.numeric(as.character(data$Gender.Inequality.Index..GII.))
 data$Maternal.Mortality.Ratio <- as.numeric(as.character(data$Maternal.Mortality.Ratio))
@@ -87,7 +91,7 @@ data$Labour.Force.Participation.Rate..Male. <- as.numeric(as.character(data$Labo
 # Classements GII
 
 Les graphiques ci-dessous présentent le classement des pays par GII. 
-Nous avons choisi d'utiliser des lollipop plot étant dans un cas ou nous représentons des données numériques (GII) par rapport à des données catégoriques (nom des pays), ce qui nous a dirigé vers un barplot. Pour parer au cas de nombreuses valeurs similaires qui rendraient ce graphique illisible, nous avons opté pour un lollipop plot.
+Nous avons choisi d'utiliser des lollipop plot étant dans un cas où nous représentons des données numériques (GII) par rapport à des données catégoriques (nom des pays), ce qui nous a dirigé vers un barplot. Pour parer au cas de nombreuses valeurs similaires qui rendraient ce graphique illisible, nous avons opté pour un lollipop plot.
 Par souci de lisibilité, nous avons de plus décidé de ne pas tout afficher à la fois mais de présenter d'abord les 15 pays au niveau d'inégalité le plus bas (GII le plus faible) avant de passer aux 15 les plus inégalitaires et enfin de donner une vue d'ensemble par région du monde.
 <br> 
 
@@ -131,7 +135,6 @@ On remarque qu'à l'exception de Singapore, la totalité de ces premiers pays du
 
 ## Bottom 15 Countries
 ```{r bot15_lollipop}
-
 p2 = data %>%
   filter(Gender.Inequality.Index..GII. != "..") %>% 
   filter(!is.na(GII.Rank)) %>% 
@@ -192,7 +195,7 @@ data %>%
     annotate("text", x = 3.5 , y = 0.68, label = "Highest GII\nYemen" , color="#da7855", size=3 , angle=0, fontface="bold")
 ```
 <br>
-Dans ce dernier graphe, nous avons affiché un classement plus général, par large zones géographiques. Pour observer l'échelle de ces indices par rapport aux deux premiers graphiques, nous avons affiché les GII extrêmes (0.016 pour la Slovénie et 0.744 pour le Yemen) ainsi que la moyenne mondiale (de 0.449).
+Dans ce dernier graphe, nous avons affiché un classement plus général, par zones géographiques. Pour observer l'échelle de ces indices par rapport aux deux premiers graphiques, nous avons affiché les GII extrêmes (0.016 pour la Slovénie et 0.744 pour le Yemen) ainsi que la moyenne mondiale (de 0.449).
 On observe comme attendu une opposition entre pays dits "du Nord", aux indices les plus faibles et ceux dits "du Sud".
 <br>
 <br>
@@ -202,7 +205,6 @@ On observe comme attendu une opposition entre pays dits "du Nord", aux indices l
 ##Différences inter-genre
 Tout d'abord nous avons voulu observer les différences d'accès à l'éducation selon le genre. Pour ce graphique et le suivant, nous avons opté pour un scatterplot (dans la mesure où nous travaillons sur des )
 ```{r}
-
 secEd <- data %>%
   # Elimination des donnees monde et continents
   filter(!is.na(GII.Rank)) %>% 
@@ -220,12 +222,11 @@ secEd <- data %>%
     ylab("Difference male-female in access to secondary education") +
     # Annotation : droite y=0
     annotate("segment", x = 0, xend = 100, y = 0, yend = 0, colour = "purple", size=1, alpha=1)
-
 # Affichage interactif
 ggplotly(secEd, tooltip="text")
 ```
 <br>
-On observe, comme on pouvait s'y attendre, que dans une grande majorité de pays, l'accès à l'éducation est plus largement réservé aux Males qu'aux Females. De plus on observe que plus l'accès à l'éducation des Females augmente et plus l'écart rétrécit : les pays au plus grand accès à l'éducation semblent faire moins de différences entre les genres.
+On observe, comme on pouvait s'y attendre, que dans une grande majorité de pays, l'accès à l'éducation est plus largement réservé aux hommes qu'aux femmes. De plus on observe que plus l'accès à l'éducation des femmes augmente et plus l'écart rétrécit : les pays au plus grand accès à l'éducation semblent faire moins de différences entre les genres.
 <br> 
 
 ## Effets sur l'Adolescent Birth Rate
@@ -250,13 +251,11 @@ secEd2 <- data %>%
     ylab("Proportion of male population with secondary education")+
     # annotation : droite y=x
     annotate("segment", x = 0, xend = 100, y = 0, yend = 100, colour = "purple", size=1, alpha=0.4)
-
 # Affichage interactif
 ggplotly(secEd2, tooltip="text")
 ```
 <br>
 Dans ce graphique, on observe une corrélation entre accès à l'éducation et taux de grossesses entre 15 et 19 ans dans la mesure où les taux supérieurs à 100 grossesses pour 1000 adolescentes sont presque tous situés dans le cadran bas-gauche (ie x<50, y<50).
 Toutefois on n'observe pas de différence significative lorsque l'écart grandit ou au contraire lorsque la tendance s'inverse. Une population qui n'accède pas à l'éducation secondaire ne semble pas diminuer son taux de "naissances adolescentes" en diminuant les inégalités d'accès mais plutôt en augmentant l'accès de tous.
-
 
 
